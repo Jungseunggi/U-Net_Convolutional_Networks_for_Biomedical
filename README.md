@@ -111,6 +111,9 @@ ISBI cell tracking challenge에서는 두번째 좋은 모델과의 성능이 �
 
 ## 7. Code implementation(tesorflow)
 
+[code](https://github.com/Jungseunggi/U-Net_Review/blob/main/U_Net_tesorflow.ipynb)
+
+
 ```
 논문에 나온 사이즈대로 설정
 def unet(input_size = (572,572,1)):
@@ -121,6 +124,7 @@ def unet(input_size = (572,572,1)):
   activation = 'relu'
 ```
 ### 7.1 Contracting path
+
 
 ```
   # 다른 참고 코드를 보면 패딩을 다 same으로 사용하던데 사용하기 편해서 그런 것 같음
