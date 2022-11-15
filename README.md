@@ -109,6 +109,50 @@ ISBI cell tracking challenge에서는 두번째 좋은 모델과의 성능이 �
 
 - 다른 분야도 생각해보면 위성사진에서 밀집 되어있는 주택가에서 주택의 경계선, 얽혀 있는 도로를 구분 등 사용이 가능할 것으로 보여짐
 
+## 7. Code implementation(tesorflow)
+
+```
+논문에 나온 사이즈대로 설정
+def unet(input_size = (572,572,1)):
+  input = Input(input_size)
+
+  # 논문에 의하면 패딩은 없음으로 valid, 활성함수는 relu 마지막 레이어만 softmax
+  padding = 'valid'
+  activation = 'relu'
+```
+### 7.1 Contracting path
+
+```
+  # 다른 참고 코드를 보면 패딩을 다 same으로 사용하던데 사용하기 편해서 그런 것 같음
+  conv = Conv2D(64, 3, activation = activation, padding = padding)(input)
+  conv = Conv2D(64, 3, activation = activation, padding = padding)(conv)
+  # concatenate할 레이어 crop
+  # 다른 참고 코드를 보면 dropout을 사용하던데 크기를 맞춰 자르는거에 초점을 맞춰서 centercrop으로 적용하는 것이 맞다고 생각함
+  crop1 = CenterCrop(392,392)(conv)
+  pool = MaxPooling2D(pool_size=(2, 2))(conv)
+  .
+  .
+  .
+```
+
+### 7.2 Expanding path
+
+```
+  # UpSampling2D만 사용하면 그냥 해상도만 뻥튀기시켜주므로 그 전에 Conv2Dtranspose로 먼저 특징을 잡아줌
+  conv = Conv2DTranspose(512, 3, padding="same")(conv)
+  conv = UpSampling2D(size=(2,2))(conv)
+  conv = concatenate([crop4,conv])
+  conv = Conv2D(512, 3, activation = activation, padding = padding)(conv)
+  conv = Conv2D(512, 3, activation = activation, padding = padding)(conv)
+  .
+  .
+  .
+  .
+  # 최종레이어 softmax 
+  conv = Conv2D(2, 1, activation="softmax", padding = padding)(conv)
+```
+
+
 
 
 
