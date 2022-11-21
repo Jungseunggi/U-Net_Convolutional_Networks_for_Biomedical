@@ -119,20 +119,19 @@ ISBI cell tracking challenge에서는 두번째 좋은 모델과의 성능이 �
 def unet(input_size = (572,572,1)):
   input = Input(input_size)
 
-  # 논문에 의하면 패딩은 없음으로 valid, 활성함수는 relu 마지막 레이어만 softmax
-  padding = 'valid'
+  # 논문에 의하면 패딩은 없음으로 valid가 맞지만 미러링을 통해 진행되므로 지금은 same을 사용, 활성함수는 relu 마지막 레이어만 softmax
+  padding = 'same'
   activation = 'relu'
 ```
 ### 7.1 Contracting path
 
 
 ```
-  # 다른 참고 코드를 보면 패딩을 다 same으로 사용하던데 사용하기 편해서 그런 것 같음
   conv = Conv2D(64, 3, activation = activation, padding = padding)(input)
   conv = Conv2D(64, 3, activation = activation, padding = padding)(conv)
   # concatenate할 레이어 crop
-  # 다른 참고 코드를 보면 dropout을 사용하던데 크기를 맞춰 자르는거에 초점을 맞춰서 centercrop으로 적용하는 것이 맞다고 생각함
-  crop1 = CenterCrop(392,392)(conv)
+  # 다른 참고 코드를 보면 dropout을 사용하던데 이유는 이 코드는 padding이 same이여서 크기차이도 없고 특징만 추출할것임으로 dropout을 사용해도 된다고 생각함
+  crop1 = Dropout(0.5)(conv)
   pool = MaxPooling2D(pool_size=(2, 2))(conv)
   .
   .
